@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FutureTech Nexus</title>
+  <script src="https://kit.fontawesome.com/ae04946ebb.js" crossorigin="anonymous"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+
+    :root {
+      --primary-color: #1f5f8c;
+      --secondary-color: #4361ee;
+      --accent-color: #ff6565;
+    }
+
+    .hero-animation {
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .proton-tunnel {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .proton-tunnel::before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(ellipse at center, rgba(100,255,218,0.1) 0%, transparent 70%);
+      animation: tunnel 10s linear infinite;
+    }
+
+    @keyframes tunnel {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.5); }
+    }
+
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--accent-color);
+    }
+
+    .btn-outline {
+      border: 2px solid var(--primary-color);
+      color: var(--primary-color);
+      background-color: transparent;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      transition: color 0.3s ease, background-color 0.3s ease;
+    }
+
+    .btn-outline:hover {
+      background-color: var(--primary-color);
+      color: white;
+    }
+
+    .btn-primary-footer {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 0.5rem;
+      border-radius: 1rem;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn-primary-footer:hover {
+      background-color: var(--secondary-color);
+    }
+
+    .light-theme {
+      --bg-color: #f8fafc;
+      --text-color: #1A202C;
+      --bg-gradient: linear-gradient(to bottom, #ffffff, #f8fafc);
+    }
+
+    .light-theme .proton-tunnel::before {
+      background: radial-gradient(ellipse at center, rgba(100,255,218,0.3) 0%, transparent 70%);
+    }
+
+    .light-theme * {
+      background-color: var(--bg-color) !important;
+      color: var(--text-color) !important;
+    }
+
+    .light-theme .nav-links a {
+      color: var(--text-color);
+    }
+
+    .light-theme .nav-links a:hover {
+      color: var(--primary-color);
+    }
+
+    .light-theme .proton-tunnel {
+      display: none;
+    }
+
+    .light-theme .btn-primary {
+      background-color: var(--text-color);
+      color: var(--bg-color);
+    }
+
+    .light-theme .btn-primary:hover {
+      background-color: var(--primary-color);
+      color: var(--bg-color);
+    }
+
+    .light-theme .btn-outline {
+      border-color: var(--text-color);
+      color: var(--text-color);
+    }
+
+    .light-theme .btn-outline:hover {
+      background-color: var(--text-color);
+      color: var(--bg-color);
+    }
+
+    .light-theme footer {
+      background-color: #2D3748;
+      color: white;
+    }
+
+ /* Loading Screen Styles */
+    .loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 1000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    .loading-text {
+      font-size: 2.5rem;
+      color: #1f5f8c;
+      animation: fadeIn 2s ease-in-out infinite alternate;
+    }
+
+    .loading-animation {
+      width: 150px;
+      height: 150px;
+      border: 4px solid #4361ee;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 1.2s linear infinite;
+      margin: 2rem 0;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0.8; }
+      to { opacity: 1; }
+    }
+
+    /* Hide loading screen after content loads */
+    .loaded .loading-screen {
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.5s ease-out;
+    }
+
+
+
+    @media (max-width: 768px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .proton-tunnel {
+    display: none;
+  }
+
+  .btn-primary,
+  .btn-outline {
+    width: 100%;
+    text-align: center;
+  }
+
+  footer .grid {
+    text-align: center;
+  }
+}
+
+  </style>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('contactForm');
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(form);
+        form.classList.add('opacity-50', 'pointer-events-none');
+        const response = await fetch(form.action, {
+          method: 'POST',
+          body: formData,
+          headers: { 'Accept': 'application/json' }
+        });
+        if (response.ok) {
+          alert('Message sent! Thank you for contacting us.');
+          form.reset();
+        } else {
+          alert('Error sending message. Please try again later.');
+        }
+        form.classList.remove('opacity-50', 'pointer-events-none');
+      });
+    });
+  </script>
+
+</head>
+<body class="bg-gradient-to-b from-black via-gray-900 to-black text-white font-inter antialiased">
+  <div class="proton-tunnel"></div>
+
+  <header class="fixed top-0 w-full bg-black/80 backdrop-blur-lg z-50">
+    <nav class="container mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="text-2xl font-bold">FutureTech Nexus</div>
+      <button id="menuToggle" class="md:hidden text-white text-2xl">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div id="navLinks" class="hidden md:flex space-x-6 absolute md:static top-16 left-0 w-full md:w-auto bg-black md:bg-transparent flex-col md:flex-row items-center md:flex">
+        <a href="#home" class="block py-2 px-4 md:py-0 md:px-0 hover:text-primary-500">Home</a>
+        <a href="#nebula-gallery" class="block py-2 px-4 md:py-0 md:px-0 hover:text-primary-500">Gallery</a>
+        <a href="#quantum-insights" class="block py-2 px-4 md:py-0 md:px-0 hover:text-primary-500">Blog</a>
+        <a href="#stellar-labs" class="block py-2 px-4 md:py-0 md:px-0 hover:text-primary-500">Projects</a>
+        <a href="#contact-portal" class="block py-2 px-4 md:py-0 md:px-0 hover:text-primary-500">Contact</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="pt-24">
+    <section id="home" class="relative py-32 hero-animation bg-gradient-to-tr from-primary-color to-accent-color">
+      <div class="container mx-auto px-6">
+        <div class="flex flex-col items-center justify-center text-center">
+          <h1 class="text-5xl font-black mb-4 text-white">Welcome to FutureTech</h1>
+          <p class="text-lg mb-8 text-white opacity-70">Exploring the boundaries of tomorrow's technology</p>
+          <div class="flex space-x-4">
+            <a href="#stellar-labs" class="btn-primary">Explore Projects</a>
+            <a href="#quantum-insights" class="btn-outline">Read Our Blog</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="nebula-gallery" class="py-20 hero-animation">
+      <div class="container mx-auto px-6">
+        <h2 class="text-4xl font-bold mb-10 text-center">Stellar Photo Gallery</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div class="group relative overflow-hidden rounded-xl shadow-2xl">
+            <img src="Quantum swarm simulation.jpg" alt="Gallery Image" class="w-full h-64 object-cover transition duration-500 group-hover:scale-105">
+            <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition duration-500">
+              <div class="flex items-center justify-center h-full">
+                <div class="text-center text-white">
+                  <h3 class="text-xl font-bold mb-2">Project Alpha</h3>
+                  <p class="text-sm">Quantum swarm simulation</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="group relative overflow-hidden rounded-xl shadow-2xl">
+            <img src="Neural net architecture.jpg" alt="Gallery Image" class="w-full h-64 object-cover transition duration-500 group-hover:scale-105">
+            <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition duration-500">
+              <div class="flex items-center justify-center h-full">
+                <div class="text-center text-white">
+                  <h3 class="text-xl font-bold mb-2">Project Beta</h3>
+                  <p class="text-sm">Neural net architecture</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="quantum-insights" class="py-20 bg-gradient-to-br from-gray-800 to-black hero-animation">
+      <div class="container mx-auto px-6">
+        <h2 class="text-4xl font-bold mb-10 text-center">Quantum Insights</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div class="bg-black/70 p-6 rounded-xl shadow-lg">
+            <h3 class="text-2xl font-bold mb-4">Neutron Star Core Dynamics</h3>
+            <p class="text-gray-300 mb-4">Exploring QCD at Planck scales...</p>
+            <a href="#" class="text-primary-500 hover:underline">Read More</a>
+          </div>
+          <div class="bg-black/70 p-6 rounded-xl shadow-lg">
+            <h3 class="text-2xl font-bold mb-4">Dark Matter Accretion</h3>
+            <p class="text-gray-300 mb-4">Cold vs Hot models...</p>
+            <a href="#" class="text-primary-500 hover:underline">Read More</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="stellar-labs" class="py-20 bg-gradient-to-tr from-gray-800 to-black hero-animation">
+      <div class="container mx-auto px-6">
+        <h2 class="text-4xl font-bold mb-10 text-center">Stellar Labs</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div class="bg-black/70 p-6 rounded-xl shadow-lg">
+            <h3 class="text-2xl font-bold mb-4">Project Omega</h3>
+            <p class="text-gray-300 mb-4">Creating stable wormholes...</p>
+            <a href="#" class="text-primary-500 hover:underline">Learn More</a>
+          </div>
+          <div class="bg-black/70 p-6 rounded-xl shadow-lg">
+            <h3 class="text-2xl font-bold mb-4">Project Gamma</h3>
+            <p class="text-gray-300 mb-4">Holographic universe mapping...</p>
+            <a href="#" class="text-primary-500 hover:underline">Learn More</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  <section id="contact-portal" class="py-20 bg-gradient-to-t from-black via-gray-900 to-black hero-animation">
+    <div class="container mx-auto px-6">
+      <h2 class="text-4xl font-bold mb-10 text-center">Contact Portal</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div>
+          <h3 class="text-2xl font-bold mb-4">Separate Contact Info Column</h3>
+          <p class="text-gray-300 mb-4">Reach out directly via:</p>
+          <p class="text-gray-300">Email: contact@example.com</p>
+          <p class="text-gray-300">Phone: +1 (234) 567-8901</p>
+          <p class="text-gray-300">Address: 123 Innovate Lane, TechCity, SD</p>
+        </div>
+        <div class="bg-black/70 p-6 rounded-xl shadow-lg">
+          <form id="contactForm" action="https://formspree.io/f/xwlyyyby" method="POST" class="flex flex-col gap-4">
+            <input 
+              type="text" 
+              name="name" 
+              placeholder="Your Name" 
+              class="p-4 bg-transparent border border-gray-600 rounded-xl focus:outline-none focus:border-primary-500"
+              required
+            />
+            
+            <input 
+              type="email" 
+              name="email" 
+              placeholder="Email Address" 
+              class="p-4 bg-transparent border border-gray-600 rounded-xl focus:outline-none focus:border-primary-500"
+              required
+            />
+            
+            <textarea 
+              name="message" 
+              placeholder="Enter your message here..." 
+              rows="5" 
+              class="p-4 bg-transparent border border-gray-600 rounded-xl focus:outline-none focus:border-primary-500"
+              required
+            ></textarea>
+            
+            <button 
+              type="submit" 
+              class="p-4 bg-primary-500 text-black rounded-xl hover:bg-primary-600 transition duration-300 self-end"
+            >
+              Send Message
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="py-16 bg-black text-white">
+    <div class="container mx-auto px-6">
+      <div class="md:flex md:justify-between">
+        <div class="mb-6 md:mb-0">
+          <h2 class="text-2xl font-bold mb-4">FutureTech Nexus</h2>
+          <p class="text-gray-400 mb-4">Pioneering technological frontiers for a brighter tomorrow.</p>
+          <div class="flex space-x-4">
+            <a href="#"><i class="fab fa-twitter text-lg text-white hover:text-primary-500"></i></a>
+            <a href="#"><i class="fab fa-github text-lg text-white hover:text-primary-500"></i></a>
+            <a href="#"><i class="fab fa-discord text-lg text-white hover:text-primary-500"></i></a>
+          </div>
+        </div>
+
+
+
+
+        <div class="grid grid-cols-2 gap-8 md:grid-cols-3">
+          <div>
+            <h3 class="text-xl font-bold mb-4">Company</h3>
+            <ul class="list-none">
+              <li><a href="#" class="text-white hover:text-primary-500">About Us</a></li>
+              <li><a href="#" class="text-white hover:text-primary-500">Our Team</a></li>
+              <li><a href="#" class="text-white hover:text-primary-500">Careers</a></li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold mb-4">Resources</h3>
+            <ul class="list-none">
+              <li><a href="#" class="text-white hover:text-primary-500">Blog</a></li>
+              <li><a href="#" class="text-white hover:text-primary-500">FAQ</a></li>
+              <li><a href="#" class="text-white hover:text-primary-500">Support</a></li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold mb-4">Subscribe</h3>
+            <p class="text-white mb-4">Stay updated on our latest breakthroughs.</p>
+            <div class="flex items-center">
+              <input type="email" placeholder="Your Email" class="p-2 text-black bg-white rounded-l-full focus:outline-none">
+              <button class="btn-primary-footer rounded-r-full">Subscribe</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-8 text-center text-gray-400">© 2025 FutureTech Nexus. All rights reserved.</div>
+    </div>
+  </footer>
+
+  <div class="absolute top-10 right-10">
+    <button id="themeToggler" class="p-4 bg-black/75 backdrop-blur-lg rounded-full text-white">
+      <i class="fas fa-moon"></i>
+    </button>
+  </div>
+
+  <script>
+    const themeToggler = document.getElementById('themeToggler');
+    themeToggler.addEventListener('click', () => {
+      document.body.classList.toggle('light-theme');
+      const icon = themeToggler.querySelector('i');
+      if (document.body.classList.contains('light-theme')) {
+        icon.classList.replace('fa-moon', 'fa-sun');
+      } else {
+        icon.classList.replace('fa-sun', 'fa-moon');
+      }
+    });
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        target.scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+
+
+    const menuToggle = document.getElementById('menuToggle');
+  const navLinks = document.getElementById('navLinks');
+  menuToggle.addEventListener('click', () => {
+    navLinks.classList.toggle('hidden');
+  });
+
+  </script>
+</body>
+</html>
